@@ -1,0 +1,2 @@
+https://chroniclingamerica.loc.gov/search/pages/results/?state=&date1=1804&date2=1819&proxtext=&x=0&y=0&dateFilterType=yearRange&rows=20&searchType=basic
+https://chroniclingamerica.loc.gov/search/pages/results/?andtext={searchTerms}&page={startPage?}&ortext={chronam:booleanOrText?}&year={chronam:year?}&date1={chronam:date?}&date2={chronam:date?}&phrasetext={chronam:phraseText?}&proxText={chronam:proxText?}&proximityValue={chronam:proximityValue?}&format=json
