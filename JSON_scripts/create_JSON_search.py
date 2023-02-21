@@ -12,14 +12,16 @@ search = input("Search term?")
 start_date = input("Start date (yyyymmdd)?")
 end_date = input("End date (yyyymmdd)?")
 base_url= "https://chroniclingamerica.loc.gov/search/pages/results/"
-page = 1
+page = 0
 count = 1
-row_size = 100
+row_size = 50
 fails = 0
 
 def dump_json(issues):
     issues["totalItems"] = count - 1
-    with open(search + "_" + start_date + "_" + end_date + ".json", "w") as file:            
+    with open(search + "_" + start_date + "_" + end_date + ".json", "w") as file:  
+    #    JSON_data = json.load(file)
+    #    JSON_data["totalItems"] += issues["totalItems"]          
         json.dump(issues, file)
 
 def get_json(url, session, rows):
@@ -53,16 +55,19 @@ with requests.Session() as session:
         print(total_pages)
 
         while page < total_pages + 1:
-            if fails > 10:
-                dump_json(issues)
-                sys.exit()
+            #if fails > 10:
+             #   dump_json(issues)
+              #  sys.exit()
             try:
                 page_json = get_json(base_url, session, row_size)
                 print(str(page) + " loaded.")
             except requests.exceptions.ReadTimeout:
                 print(str(page) + " failed to load.")
-                page += 1
+                #page += 1
                 fails += 1
+                if fails >= 5:
+                    page +=1
+                    fails = 0
                 print(fails)
                 continue
             else:
