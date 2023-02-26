@@ -12,10 +12,11 @@ search = input("Search term?")
 start_date = input("Start date (yyyymmdd)?")
 end_date = input("End date (yyyymmdd)?")
 base_url= "https://chroniclingamerica.loc.gov/search/pages/results/"
-page = 0
+page = 117
 count = 1
 row_size = 50
 fails = 0
+failed_pages = []
 
 def dump_json(issues):
     issues["totalItems"] = count - 1
@@ -65,10 +66,11 @@ with requests.Session() as session:
                 print(str(page) + " failed to load.")
                 #page += 1
                 fails += 1
+                print(fails)
                 if fails >= 5:
+                    failed_pages.append(page)
                     page +=1
                     fails = 0
-                print(fails)
                 continue
             else:
                 fails = 0
@@ -77,7 +79,7 @@ with requests.Session() as session:
             for record in page_json['items']:
                 if record['date'] >= start_date and record['date'] <= end_date:
                     try:
-                        new_record = {'item':count,'url':record['url'],'date':record['date'],'ocr_eng':record['ocr_eng']}
+                        new_record = {'item':count,'newspaper_title':record['title_normal'],'city':record['city'],'url':record['url'],'date':record['date'],'ocr_eng':record['ocr_eng']}
                     except KeyError:
                         print("Nonenglish ocr")
                     else:
@@ -88,3 +90,5 @@ with requests.Session() as session:
         dump_json(issues)
         sys.exit()
     dump_json(issues)
+    print("these pages failed to load")
+    print(failed_pages)
