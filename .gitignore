@@ -1,3 +1,5 @@
 *.json
 word_freq/evening-star/
 *.DS_Store
+gensim-model-*
+*.pickle
