@@ -1,8 +1,11 @@
 from requests import Session, exceptions
 from time import sleep
 from os import path
+from argparse import ArgumentParser
 
 class SessionController:
+
+    OCR_URL = 'https://chroniclingamerica.loc.gov/ocr.json'
 
     def __init__(self, newspaper=None, start_date=None, end_date=None):
         self._session = Session()
@@ -18,7 +21,7 @@ class SessionController:
                 r = self._session.get(url, timeout=timeout, stream=stream)
             except exceptions.ReadTimeout:
                 print("Timeout occurred, retrying GET...")
-                sleep(3) # we will be nice to the API
+                sleep(3) # be nice to the API
             else:
                 if(r.status_code == 200 and format == 'json'):
                     return r.json()
@@ -37,7 +40,7 @@ class SessionController:
         self._issues = json_out['issues']
 
     def get_bulk_file_names(self):
-        print("Searching list of issues...", end='', flush=True)
+        print("Searching list of issues", end='', flush=True)
         for issue in self._issues:
             if(issue['date_issued'] >= self._start_date and
             issue['date_issued'] <= self._end_date):
@@ -53,7 +56,7 @@ class SessionController:
 
     def download_batches(self, destination):
         ocr_table = self._get_and_decode(
-            'https://chroniclingamerica.loc.gov/ocr.json', 5, 10, 'json')
+            self.OCR_URL, 5, 10, 'json')
         for ocr_dump in ocr_table['ocr']:
             if(ocr_dump['name'].split('.')[0] in self._batches):
                 print("Downloading " + ocr_dump['name'] + "...")
@@ -68,10 +71,22 @@ class SessionController:
 # RUNNING CODE
 if __name__ == "__main__":
 
+    parser = ArgumentParser()
+
+    parser.add_argument('url')
+    parser.add_argument('start_date')
+    parser.add_argument('end_date')
+    parser.add_argument('-o', '--output')
+
+    args = parser.parse_args()
+
     s = SessionController(
-        'https://chroniclingamerica.loc.gov/lccn/sn83045462.json', 
-        '1917-01-01', 
-        '1953-12-31')
+        args.url, 
+        args.start_date, 
+        args.end_date)
+
     s.get_issues()
     s.get_bulk_file_names()
-    s.download_batches('/Volumes/Alpha/evening-star')
+
+    if(args.output):
+        s.download_batches(args.output)
