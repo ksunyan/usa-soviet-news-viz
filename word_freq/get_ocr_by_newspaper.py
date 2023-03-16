@@ -51,8 +51,8 @@ class SessionController:
 # RUNNING CODE
 s = SessionController(
     'https://chroniclingamerica.loc.gov/lccn/sn83045462.json', 
-    '1917-05-30', 
-    '1917-12-31', 
+    '1917-01-01', 
+    '1953-12-31', 
     './evening-star')
 s.get_issues()
 s.get_and_write_ocr()

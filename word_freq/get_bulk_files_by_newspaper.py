@@ -4,7 +4,7 @@ from os import path
 
 class SessionController:
 
-    def __init__(self, newspaper, start_date, end_date):
+    def __init__(self, newspaper=None, start_date=None, end_date=None):
         self._session = Session()
         self._newspaper_url = newspaper
         self._issues = []
@@ -25,8 +25,9 @@ class SessionController:
                 elif(r.status_code == 200 and format == 'tar'):
                     return r.iter_content(chunk_size=128)
                 elif(r.status_code == 429):
-                    print("Too many requests! Sleeping for 300 s...")
-                    sleep(300)
+                    wait_time = int(r.headers['Retry-After'])
+                    print("Too many requests! Sleeping for " + str(wait_time) + " s...")
+                    sleep(wait_time)
                 else:
                     print("Other error, status code=" + str(r.status_code))
             
@@ -47,6 +48,9 @@ class SessionController:
         print()
         print("Batches to download: " + str(self._batches))
 
+    def specify_bulk_file_names(self, filenames):
+        self._batches = filenames
+
     def download_batches(self, destination):
         ocr_table = self._get_and_decode(
             'https://chroniclingamerica.loc.gov/ocr.json', 5, 10, 'json')
@@ -58,14 +62,16 @@ class SessionController:
                 with open(path.join(destination, ocr_dump['name']), 'wb') as fd:
                     for chunk in iter_content:
                         fd.write(chunk)
-            print("Done")
+                print("Done")
             
 
 # RUNNING CODE
-s = SessionController(
-    'https://chroniclingamerica.loc.gov/lccn/sn83045462.json', 
-    '1917-01-01', 
-    '1953-12-31')
-s.get_issues()
-s.get_bulk_file_names()
-s.download_batches('./evening-star')
+if __name__ == "__main__":
+
+    s = SessionController(
+        'https://chroniclingamerica.loc.gov/lccn/sn83045462.json', 
+        '1917-01-01', 
+        '1953-12-31')
+    s.get_issues()
+    s.get_bulk_file_names()
+    s.download_batches('/Volumes/Alpha/evening-star')

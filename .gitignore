@@ -1,5 +1,5 @@
 *.json
-word_freq/evening-star/
-*.DS_Store
+.DS_Store
 gensim-model-*
 *.pickle
+__pycache__
