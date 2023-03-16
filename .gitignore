@@ -3,3 +3,4 @@
 gensim-model-*
 *.pickle
 __pycache__
+*.txt
