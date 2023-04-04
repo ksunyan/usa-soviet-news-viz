@@ -15,12 +15,12 @@ class SessionController:
         self._start_date = start_date
         self._end_date = end_date
     
-    def _get_and_decode(self, url, timeout, tries, format, stream=False):
+    def _get_and_decode(self, url, timeout, tries, format, stream=False, skip_error=False): #TO DO: should skip error be implemented here or elsewhere?
         for i in range(tries):
             try:
                 r = self._session.get(url, timeout=timeout, stream=stream)
             except exceptions.ReadTimeout:
-                print("Timeout occurred, retrying GET...")
+                print("Timeout occurred, retrying GET")
                 sleep(3) # be nice to the API
             else:
                 if(r.status_code == 200 and format == 'json'):
@@ -29,13 +29,13 @@ class SessionController:
                     return r.iter_content(chunk_size=128)
                 elif(r.status_code == 429):
                     wait_time = int(r.headers['Retry-After'])
-                    print("Too many requests! Sleeping for " + str(wait_time) + " s...")
+                    print("Too many requests! Sleeping for " + str(wait_time) + " s")
                     sleep(wait_time)
-                else:
-                    print("Other error, status code=" + str(r.status_code))
+                elif:
+                    print("Other error, status code=" + str(r.status_code) + ". Skipping item")
             
     def get_issues(self):
-        print("Getting issues...")
+        print("Getting issues")
         json_out = self._get_and_decode(self._newspaper_url, 5, 10, 'json')
         self._issues = json_out['issues']
 
@@ -44,6 +44,7 @@ class SessionController:
         for issue in self._issues:
             if(issue['date_issued'] >= self._start_date and
             issue['date_issued'] <= self._end_date):
+                # TO DO: wrap in try-except to allow skipping 
                 issue_json = self._get_and_decode(issue['url'], 5, 10, 'json')
                 batch_name = issue_json['batch']['name']
                 self._batches.add(batch_name)
@@ -59,7 +60,7 @@ class SessionController:
             self.OCR_URL, 5, 10, 'json')
         for ocr_dump in ocr_table['ocr']:
             if(ocr_dump['name'].split('.')[0] in self._batches):
-                print("Downloading " + ocr_dump['name'] + "...")
+                print("Downloading " + ocr_dump['name'])
                 # streaming download 
                 iter_content = self._get_and_decode(ocr_dump['url'], 5, 10, 'tar', stream=True)
                 with open(path.join(destination, ocr_dump['name']), 'wb') as fd:

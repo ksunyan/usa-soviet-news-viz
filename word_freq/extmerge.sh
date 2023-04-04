@@ -1,4 +1,4 @@
-tar -xf $1 '*.txt' && rsync -a sn83045462/ . && rm -r sn83045462 && rm $1
+tar -xf $1 '*.txt' && rsync -a snxxxxxxxx/ . && rm -r snxxxxxxxx
 echo "Done"
 
 
