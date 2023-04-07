@@ -3,8 +3,10 @@ SHOW DATABASES;
 USE ChronAmWords;
 CREATE TABLE IF NOT EXISTS token (
     `string` VARCHAR(50),
-    `count` INT
-);
+    `date` DATE,
+    `count` INT,
+    PRIMARY KEY (`string`,`date`)
+) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE IF NOT EXISTS occurrence (
     `string` VARCHAR(50),
