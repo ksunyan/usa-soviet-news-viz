@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     # Traverse the subdirectories of root and tokenize
     token_counts = {}
-    tokenizer = RegexpTokenizer(r'[a-zA-Z\-]+|\d[\d\,]+|\$[\d\.\,]+|[%&#]')
+    tokenizer = RegexpTokenizer(r'[a-zA-Z\-]+')
     for root, dirs, files in walk(args.root):
         if 'ocr.txt' in files:
             filedate = date_from_path(root)
