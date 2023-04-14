@@ -25,8 +25,8 @@
 <script>
 
     // set the dimensions and margins of the graph
-    var margin = {top: 80, right: 25, bottom: 30, left: 100},
-      width = 700 - margin.left - margin.right,
+    var margin = {top: 80, right: 25, bottom: 30, left: 150},
+      width = 850 - margin.left - margin.right,
       height = 600 - margin.top - margin.bottom;
     
     // append the svg object to the body of the page
@@ -93,7 +93,7 @@
       }
       var mousemove = function(d) {
         tooltip
-          .html("The exact value of<br>this cell is: " + d.value)
+          .html("The exact value of<br>this cell is: " + this.id)
           .style("left", (d3.mouse(this)[0]+70) + "px")
           .style("top", (d3.mouse(this)[1]) + "px")
       }
@@ -106,6 +106,7 @@
       }
     
       // add the squares
+      var n = 0
       svg.selectAll()
         .data(data, function(d) {return d.word+':'+d.period;})
         .enter()
@@ -120,6 +121,7 @@
           .style("stroke-width", 4)
           .style("stroke", "none")
           .style("opacity", 0.8)
+          .attr("id", function(d) {return d.word;})
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
