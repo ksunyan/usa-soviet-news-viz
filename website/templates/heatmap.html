@@ -4,20 +4,30 @@
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
-<!-- Create a div where the graph will take place -->
-<head>
-  <style>
-    .container {
-      float: left;
-    }
-    .containerRight {
-      float: right;
-    }
-  </style>
-</head>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
-<div class="container" id="my_dataviz"></div>
-<div class="container" id="tooltip"></div>
+
+
+<div class="w3-container" id="word_vector_explanation">
+  <div class="w3-content" style="max-width:1000px">
+    <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Word Vectors</span></h5>
+    <p>lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </div>
+  <div class="w3-padding-32"></div>
+</div>
+<div class="w3-twothird w3-container" id="my_dataviz"></div>
+<div class="w3-third w3-container" id = "info">
+  <h3>August 23rd, 1939 - June 22nd, 1941</h3>
+  <p>From the official signing of the Molotov-Ribbontrop Pact, to the first day of Operation Barbarossa, the German invasion of the Soviet Union.</p>
+  <h3>June 23rd, 1941 - February 2nd, 1943</h3>
+  <p>From Operation Barbarossa to the Soviet announcement of the surrender of the German Sixth Army in Stalingrad.</p>
+  <h3>February 3rd, 1943 - May 9th, 1945</h3>
+  <p>From the end of the Battle of Stalingrad to the official surrender of Germany in Soviet historiography.</p>
+  <h3>May 10th, 1945 - June 24th, 1948</h3>
+  <p>From the end of the war in Europe to the beginning of the Soviet blockade of Berlin.</p>
+  <h3>June 25th, 1948 - March 5th, 1953</h3>
+  <p>From the Berlin Blockade to the death of Stalin.</p>
+</div>
 
 <!-- Load color palettes -->
 <script src="https://github.com/d3/d3-scale-chromatic/blob/main/src/diverging/RdBu.js"></script>
@@ -39,7 +49,7 @@
             "translate(" + margin.left + "," + margin.top + ")");
     
     //Read the data
-    d3.csv("test.csv", function(data) {
+    d3.csv("static/heatmap.csv", function(data) {
     
       // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
       var myGroups = d3.map(data, function(d){return d.word;}).keys()
@@ -65,14 +75,14 @@
         .style("font-size", 15)
         .call(d3.axisLeft(y).tickSize(0))
         .select(".domain").remove()
-    
+
       // Build color scale
       var myColor = d3.scaleSequential()
         .interpolator(d3.interpolate("white", "red"))
         .domain([0,.65])
     
       // create a tooltip
-      var tooltip = d3.select("#tooltip")
+      var tooltip = d3.select("#my_dataviz")
         .append("div")
         //.call(d3.axisRight(y).tickSize(0))
         .style("opacity", 0)
@@ -93,9 +103,11 @@
       }
       var mousemove = function(d) {
         tooltip
-          .html("The exact value of<br>this cell is: " + this.id)
+          .html("The cosine similarity of Stalin and <b>" + this.id + "</b> is <b>" + d.value + "</b> for the period <b>" + d.period + "</b>.")
           .style("left", (d3.mouse(this)[0]+70) + "px")
           .style("top", (d3.mouse(this)[1]) + "px")
+          //.attr("x", 0)
+          //.attr("y", -550)
       }
       var mouseleave = function(d) {
         tooltip
@@ -125,15 +137,20 @@
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
+
+      svg.append("text")
+        .attr("x", width)
+        .attr("y", d[0].period)
+        .text("test")
     })
     
     // Add title to graph
     svg.append("text")
             .attr("x", 0)
-            .attr("y", -60)
+            .attr("y", -50)
             .attr("text-anchor", "left")
-            .style("font-size", "22px")
-            .text("A d3.js heatmap");
+            .style("font-size", "30px")
+            .text("Associations with Stalin");
     
     // Add subtitle to graph
     svg.append("text")
@@ -143,7 +160,7 @@
             .style("font-size", "14px")
             .style("fill", "grey")
             .style("max-width", 400)
-            .text("A short description of the take-away message of this chart.");
+            .text("Hover over each cell to see exact values");
     
     
     </script>
