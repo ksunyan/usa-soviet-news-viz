@@ -32,7 +32,7 @@
         let svg = d3.select("body").append("svg")
             .attr("width", svg_w)
             .attr("height", svg_h)
-            .attr("style", "background-color:gray");
+            .attr("style", "background-color:#EEEEEE");
 
         query_form.onsubmit = async (e) => {
             e.preventDefault();
@@ -64,17 +64,28 @@
                     .range([svg_h - bottom_marg, top_marg]);
 
                 // points
-                svg.selectAll("circle")
-                    .data(word.series)
-                    .enter()
-                    .append("circle")
-                    .attr("cx", d => {return x_scale(new Date(d.month));})
-                    .attr("cy", d => {return y_scale(d.value);})
-                    .attr("r", 3)
-                    .attr("fill","red");
+                // svg.selectAll("circle")
+                //     .data(word.series)
+                //     .enter()
+                //     .append("circle")
+                //     .attr("cx", d => {return x_scale(new Date(d.month));})
+                //     .attr("cy", d => {return y_scale(d.value);})
+                //     .attr("r", 3)
+                //     .attr("fill","red");
+
+                // line
+                svg.append("path")
+                    .datum(word.series)
+                    .attr("fill", "none")
+                    .attr("stroke", "blue")
+                    .attr("stroke-width", 2)
+                    .attr("d", d3.line()
+                        .x(d => {return x_scale(new Date(d.month));})
+                        .y(d => {return y_scale(new Date(d.value));})
+                    )
 
                 // axes
-                let x_axis = d3.axisBottom().scale(x_scale).ticks(d3.timeMonth);
+                let x_axis = d3.axisBottom().scale(x_scale).ticks(d3.timeYear);
 
                 let y_axis = d3.axisLeft().scale(y_scale);
 

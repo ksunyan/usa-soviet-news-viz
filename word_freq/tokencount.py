@@ -4,7 +4,6 @@ from os import path, walk, environ
 from argparse import ArgumentParser
 from datetime import date
 import sqlite3
-import config
 
 # Helper functions
 
@@ -84,7 +83,8 @@ if __name__ == "__main__":
 
     # Load in English corpus
     corpus = set(brown.words())
-    corpus = corpus.union(keywords)
+    if(args.keywords):
+        corpus = corpus.union(keywords)
 
     # Traverse the subdirectories of root and tokenize
     token_counts = {}
@@ -96,6 +96,7 @@ if __name__ == "__main__":
             filedate = date_from_path(root)
             filename = path.join(root, 'ocr.txt')
             filemetadata = metadata_from_path(root)
+            total_token_count = 0
             print(filename)
             with open(filename) as fp:
                 # Algorithm to resolve words that span two lines
@@ -126,6 +127,7 @@ if __name__ == "__main__":
                                         keyword_occurrences, 
                                         keywords)
                                 ptr += 3
+                                total_token_count += 1
                             else:
                                 count_token(tokens[ptr], filedate, token_counts, corpus)
                                 if(args.keywords):
@@ -137,6 +139,7 @@ if __name__ == "__main__":
                                         keyword_occurrences, 
                                         keywords)
                                 ptr += 2
+                                total_token_count += 1
                         # Case 3: Neither the current nor the next token is a newline
                         else:
                             count_token(tokens[ptr], filedate, token_counts, corpus)
@@ -149,6 +152,7 @@ if __name__ == "__main__":
                                         keyword_occurrences, 
                                         keywords)
                             ptr += 1
+                            total_token_count += 1
                     # Handle the final token (unless it was already handled as part of
                     # a spanning token). 
                     if(tokens[ptr] != '\n'):
@@ -161,13 +165,12 @@ if __name__ == "__main__":
                                         filemetadata[5], 
                                         keyword_occurrences, 
                                         keywords)
-            # Count total number of valid tokens in file 
-            count_sum = sum(token_counts.values()) 
+                        total_token_count += 1
             # Add to our running list of processed files
             tokenized_files.append({
                 "filepath":filename, 
                 "month":filedate.replace(day=1), 
-                "num_tokens":count_sum})
+                "num_tokens":total_token_count})
 
     # Write to database
     print("Writing data to database")
@@ -181,7 +184,7 @@ if __name__ == "__main__":
             "(string, month, count) "
             "VALUES(:string, :month, :count) "
             "ON CONFLICT DO UPDATE SET "
-            "count=count+token.count")
+            "count= :count+token.count")
     
     for i in range(0, len(val), 100):
         print("Executing from: " + str(i))

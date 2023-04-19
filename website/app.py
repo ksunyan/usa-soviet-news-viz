@@ -29,12 +29,12 @@ def word_freq_query():
 
     word_list = [w.strip() for w in raw_words.split(',')]
 
-    db_con = sqlite3.connect('ChronAmWords.db')
+    db_con = sqlite3.connect('../word_freq/ChronAmWords.db')
     db_cur = db_con.cursor()
 
     output_array = []
     for word in word_list:
-        sql = ("SELECT * FROM token WHERE string='" + word + "'" )
+        sql = ("SELECT * FROM token WHERE string='" + word + "' ORDER BY month ASC" )
         res = db_cur.execute(sql)
         result_array = [{"month":row[1], "value":row[2]} for row in res.fetchall()]
         output_array.append({"word":word,"series":result_array})

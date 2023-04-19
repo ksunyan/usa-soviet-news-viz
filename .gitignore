@@ -4,6 +4,7 @@ gensim-model-*
 *.pickle
 __pycache__
 *.txt
+!keywords.txt
 config.py
 test_dir
 test_dir_2
