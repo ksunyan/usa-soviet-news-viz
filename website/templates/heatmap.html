@@ -6,6 +6,16 @@
 
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
+<style>
+  .circle:hover{
+    stroke: black;
+    stroke-width: 4px;
+  }
+  .tooltip {
+    display: inline;
+    position: fixed;
+  }
+  </style>
 
 
 <div class="w3-container" id="word_vector_explanation">
@@ -107,12 +117,14 @@
         d3.select(this)
           .style("stroke", "black")
           .style("opacity", 1)
+        console.log(d3.mouse(this))
       }
       var mousemove = function(d) {
+        let pos = d3.mouse(this);
         tooltip
-          .style("left", (d3.mouse(this)[0]+70) + "px")
+          .style("left", (d3.mouse(this)[0]+20) + "px")
           .style("top", (d3.mouse(this)[1]) + "px")
-          .html("The cosine similarity of Stalin and <b>" + this.id + "</b> is <b>" + d.value + "</b> for the period <b>" + d.period + "</b>.")
+          .html("The cosine similarity of Stalin and <b>" + this.id + "</b> is <b>" + d.value + "</b> <br>for the period <b>" + d.period + "</b>.")
           //.attr("x", 0)
           //.attr("y", -550)
       }
@@ -193,13 +205,6 @@
 
 <!-- Create an element where the map will take place -->
 <div id="my_dataviz2"></div>
-
-<style>
-.circle:hover{
-  stroke: black;
-  stroke-width: 4px;
-}
-</style>
 
 <script>
 
