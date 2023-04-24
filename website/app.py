@@ -35,16 +35,22 @@ def word_freq_query():
     db_cur = db_con.cursor()
 
     # query the database for monthly totals
-    if(data_type == "frequency"):
-        pass
+    # if(data_type == "frequency"):
+    #     date1 = date.fromisoformat(datestring1)
+    #     date2 = date.fromisoformat(datestring2)
+    #     pass
 
     output_array = []
     for word in word_list:
-        sql = ("SELECT * FROM token WHERE string='" + word + 
-            "' AND (month BETWEEN '" + datestring1 + 
-            "' AND '" + datestring2 + "') ORDER BY month ASC")
-        print(sql)
-        res = db_cur.execute(sql)
+        val = {
+            "word":word,
+            "datestring1":datestring1,
+            "datestring2":datestring2,
+        }
+        sql = ("SELECT * FROM token WHERE string=:word "
+            "AND (month BETWEEN :datestring1 AND :datestring2) "
+            "ORDER BY month ASC")
+        res = db_cur.execute(sql, val)
         result_array = [{"month":row[1], "value":row[2]} 
             for row in res.fetchall()] 
         output_array.append({"word":word,"series":result_array})
