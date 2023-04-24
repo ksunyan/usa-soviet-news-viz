@@ -1,42 +1,55 @@
 <!DOCTYPE html>
 
 <head>
-
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <h1>Word Frequency</h1>
     <form id="query_form">
         <div>
-        <label for="date1">from</label>
-        <input type="date" name="date1" id="date1" 
-            min="1917-01-01" max="1953-12-31" value="1917-01-01"> 
-        <label for="date2">to</label>
-        <input type="date" name="date2" id="date2" 
-            min="1917-01-01" max="1953-12-31" value="1953-12-31">
+            <label>display: <label>
+            <label for="frequency">frequencies</label>
+            <input type="radio" name="data_type" id="frequency" value="frequency" checked>
+            <label for="raw">raw counts</label>
+            <input type="radio" name="data_type" id="raw" value="raw">
+        </div>
+        <div>
+            <label for="date1">from</label>
+            <input type="month" name="date1" id="date1" 
+                min="1917-01" max="1953-12" value="1917-01"> 
+            <label for="date2">to</label>
+            <input type="month" name="date2" id="date2" 
+                min="1917-01" max="1953-12" value="1953-12">
         </div> 
         <div>
-        <label for="words">for the words</label>
-        <input type="text" name="words" id="words">
-        <input type="submit" value="Search">
+            <label for="words">for the words</label>
+            <input type="text" name="words" id="words">
+            <input type="submit" value="Search">
         </div>
     </form>
     <script type="text/javascript">
 
-        let svg_w = 800;
-        let svg_h = 600;
-        let bottom_marg = 80;
-        let left_marg = 100;
-        let right_marg = 80;
-        let top_marg = 20;
-
-        let svg = d3.select("body").append("svg")
-            .attr("width", svg_w)
-            .attr("height", svg_h)
-            .attr("style", "background-color:#EEEEEE");
-
         query_form.onsubmit = async (e) => {
             e.preventDefault();
 
+            // clear previous viz
+            d3.select("svg").remove();
+
+            // set up new viz
+            let svg_w = document.body.clientWidth-10;
+            let svg_h = 600;
+            let bottom_marg = 80;
+            let left_marg = 100;
+            let right_marg = 80;
+            let top_marg = 20;
+
+            let svg = d3.select("body").append("svg")
+                .attr("width", svg_w)
+                .attr("height", svg_h)
+                .attr("style", "background-color:#FFFFFF");
+
+            // fetch data
             let response = await fetch("/query", {
                 method: "POST",
                 body: new FormData(query_form)
@@ -46,61 +59,65 @@
 
             dataset = result.dataset;
 
+            // determine min and max values
+            let min_value = Number.MAX_SAFE_INTEGER;
+            let max_value = 0;
             for (const word of dataset){
-                let min_date = d3.min(word.series, d => d.month);
-                let max_date = d3.max(word.series, d => d.month);
-                let min_value = d3.min(word.series, d => d.value);
-                let max_value = d3.max(word.series, d => d.value);
-
-                // horizontal scaling
-                let x_scale = d3.scaleTime()
-                    .domain([new Date(min_date), new Date(max_date)])
-                    .range([left_marg, svg_w - right_marg])
-                    .nice(); 
-
-                // vertical scaling
-                let y_scale = d3.scaleLinear()
-                    .domain([min_value, max_value])
-                    .range([svg_h - bottom_marg, top_marg]);
-
-                // points
-                // svg.selectAll("circle")
-                //     .data(word.series)
-                //     .enter()
-                //     .append("circle")
-                //     .attr("cx", d => {return x_scale(new Date(d.month));})
-                //     .attr("cy", d => {return y_scale(d.value);})
-                //     .attr("r", 3)
-                //     .attr("fill","red");
-
-                // line
-                svg.append("path")
-                    .datum(word.series)
-                    .attr("fill", "none")
-                    .attr("stroke", "blue")
-                    .attr("stroke-width", 2)
-                    .attr("d", d3.line()
-                        .x(d => {return x_scale(new Date(d.month));})
-                        .y(d => {return y_scale(new Date(d.value));})
-                    )
-
-                // axes
-                let x_axis = d3.axisBottom().scale(x_scale).ticks(d3.timeYear);
-
-                let y_axis = d3.axisLeft().scale(y_scale);
-
-                svg.append("g")
-                    .attr("transform","translate(0, " + (svg_h - bottom_marg) + ")")
-                    .call(x_axis)
-                    .style("stroke-width","2px")
-                    .style("font-size","12px");
-
-                svg.append("g")
-                    .attr("transform","translate(" + left_marg + ", 0)")
-                    .call(y_axis)
-                    .style("stroke-width","2px")
-                    .style("font-size","12px");;
+                if(word.series.length > 0){
+                    min_value = Math.min(min_value, 
+                        d3.min(word.series, d => d.value));
+                    max_value = Math.max(max_value, 
+                        d3.max(word.series, d => d.value));
+                }
             }
+            let min_date = result.data_date_range[0];
+            let max_date = result.data_date_range[1];
+
+            // horizontal scaling
+            let x_scale = d3.scaleTime()
+                .domain([new Date(min_date), new Date(max_date)])
+                .range([left_marg, svg_w - right_marg])
+                .nice(); 
+
+            // vertical scaling
+            let y_scale = d3.scaleLinear()
+                .domain([min_value, max_value])
+                .range([svg_h - bottom_marg, top_marg]);
+
+            // color scaling
+            let color_scale = d3.scaleLinear()
+                .domain([0,dataset.length-1])
+                .range(["red", "blue"]);
+
+            for (let i = 0; i < dataset.length; i++){
+                if(dataset[i].series.length > 0){
+                    svg.append("path")
+                        .datum(dataset[i].series)
+                        .attr("fill", "none")
+                        .attr("stroke", color_scale(i))
+                        .attr("stroke-width", 2)
+                        .attr("d", d3.line()
+                            .x(d => {return x_scale(new Date(d.month));})
+                            .y(d => {return y_scale(new Date(d.value));})
+                        )
+                }
+            }
+            // axes
+            let x_axis = d3.axisBottom().scale(x_scale).ticks(d3.timeYear);
+
+            let y_axis = d3.axisLeft().scale(y_scale);
+
+            svg.append("g")
+                .attr("transform","translate(0, " + (svg_h - bottom_marg) + ")")
+                .call(x_axis)
+                .style("stroke-width","2px")
+                .style("font-size","12px");
+
+            svg.append("g")
+                .attr("transform","translate(" + left_marg + ", 0)")
+                .call(y_axis)
+                .style("stroke-width","2px")
+                .style("font-size","12px");;
         }
         
     </script>

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from datetime import date
 import sqlite3
 
 app = Flask(__name__)
@@ -23,20 +24,29 @@ def word_freq():
 def word_freq_query():
     data = request.form
 
+    data_type = data['data_type']
     raw_words = data['words']
-    date1 = data['date1']
-    date2 = data['date2']
+    datestring1 = data['date1'] + "-01"
+    datestring2 = data['date2'] + "-01"
 
     word_list = [w.strip() for w in raw_words.split(',')]
 
     db_con = sqlite3.connect('../word_freq/ChronAmWords.db')
     db_cur = db_con.cursor()
 
+    # query the database for monthly totals
+    if(data_type == "frequency"):
+        pass
+
     output_array = []
     for word in word_list:
-        sql = ("SELECT * FROM token WHERE string='" + word + "' ORDER BY month ASC" )
+        sql = ("SELECT * FROM token WHERE string='" + word + 
+            "' AND (month BETWEEN '" + datestring1 + 
+            "' AND '" + datestring2 + "') ORDER BY month ASC")
+        print(sql)
         res = db_cur.execute(sql)
-        result_array = [{"month":row[1], "value":row[2]} for row in res.fetchall()]
+        result_array = [{"month":row[1], "value":row[2]} 
+            for row in res.fetchall()] 
         output_array.append({"word":word,"series":result_array})
 
-    return {"dataset":output_array}
+    return {"dataset":output_array, "data_date_range":[datestring1, datestring2]}

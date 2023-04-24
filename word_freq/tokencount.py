@@ -5,6 +5,9 @@ from argparse import ArgumentParser
 from datetime import date
 import sqlite3
 
+# Constants
+DB_BULK_OP_SIZE = 1000
+
 # Helper functions
 
 def count_token(token, date, token_dict, corpus):
@@ -186,26 +189,26 @@ if __name__ == "__main__":
             "ON CONFLICT DO UPDATE SET "
             "count= :count+token.count")
     
-    for i in range(0, len(val), 100):
+    for i in range(0, len(val), DB_BULK_OP_SIZE):
         print("Executing from: " + str(i))
-        db_cur.executemany(sql,val[i:i+100])
+        db_cur.executemany(sql,val[i:i+DB_BULK_OP_SIZE])
 
     val = tokenized_files
     sql = ("INSERT INTO source "
             "(filepath, month, num_tokens) "
             "VALUES(:filepath, :month, :num_tokens)")
     
-    for i in range(0, len(val), 100):
+    for i in range(0, len(val), DB_BULK_OP_SIZE):
         print("Executing from: " + str(i))
-        db_cur.executemany(sql,val[i:i+100])
+        db_cur.executemany(sql,val[i:i+DB_BULK_OP_SIZE])
 
     val = keyword_occurrences
     sql = ("INSERT INTO occurrence "
             "(string, date, lccn, ed, seq) "
             "VALUES(:string, :date, :lccn, :ed, :seq)")
     
-    for i in range(0, len(val), 100):
+    for i in range(0, len(val), DB_BULK_OP_SIZE):
         print("Executing from: " + str(i))
-        db_cur.executemany(sql,val[i:i+100])
+        db_cur.executemany(sql,val[i:i+DB_BULK_OP_SIZE])
 
     db_con.commit()
