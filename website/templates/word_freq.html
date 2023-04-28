@@ -39,6 +39,8 @@
 
             // clear previous viz
             d3.select("svg").remove();
+            d3.select("ul").remove();
+            d3.select("h2").remove();
 
             // set up new viz
             let svg_w = document.body.clientWidth-10;
@@ -53,6 +55,9 @@
                 .attr("height", svg_h)
                 .attr("style", "background-color:#FFFFFF");
 
+            let metadata_heading = d3.select("body").append("h2");
+            let ul = d3.select("body").append("ul");
+
             // fetch data
             let response = await fetch("/query", {
                 method: "POST",
@@ -61,7 +66,8 @@
 
             let result = await response.json();
 
-            dataset = result.dataset;
+            let dataset = result.dataset;
+            let data_type = result.data_type;
 
             // determine min and max values
             let min_value = Number.MAX_SAFE_INTEGER;
@@ -92,6 +98,41 @@
             let color_scale = d3.scaleLinear()
                 .domain([0,dataset.length-1])
                 .range(["red", "blue"]);
+
+            // function for fetching metadata
+            async function retrieve_metadata(d){
+                let pointed_date = new Date(d.month)
+
+                let request_form = new FormData()
+                request_form.append("word", d.word)
+                request_form.append("month", d.month)
+
+                let response = await fetch("/metadata", {
+                method: "POST",
+                body: request_form});
+                
+                let result = await response.json();
+
+                let metadata = result.metadata;
+
+                d3.selectAll("li").remove();
+                metadata_heading.text("Sources for '" + d.word + 
+                    "' from " + month_names[pointed_date.getUTCMonth()] + 
+                    " " + pointed_date.getUTCFullYear() + 
+                    " (" + metadata.length + " pages)")
+
+                for (const elem of metadata){
+                    url = ("https://chroniclingamerica.loc.gov/lccn/" + 
+                        elem.lccn + "/" + elem.date + "/" + elem.ed + "/" + 
+                        elem.seq)
+                    txt = (elem.date + ": " + 
+                        elem.lccn + 
+                        ", edition " + elem.ed +
+                        ", sequence " + elem.seq); 
+                    ul.append("li")
+                        .html("<a href=" + url + " target='_blank'>" + txt + "</a>")
+                }
+            }
 
             //tooltip
             let tooltip = d3.select("body")
@@ -126,6 +167,10 @@
                 tooltip.style("opacity", 0)
             }
 
+            function mousedown(event, d) {
+                retrieve_metadata(d);
+            }
+
             // show and hide points
             function svg_mouseover() {
                 d3.selectAll("circle").style("opacity", 1)
@@ -140,7 +185,12 @@
                 .on("mouseleave", svg_mouseleave);
 
             // add the lines and points
+            
             for (let i = 0; i < dataset.length; i++){
+
+                // add the word property to the series array
+                dataset[i].series.forEach((e)=>{e.word=dataset[i].word});
+
                 if(dataset[i].series.length > 0){
                     svg.append("path")
                         .datum(dataset[i].series)
@@ -155,12 +205,12 @@
                     // line label
                     const last_elem = dataset[i].series[(dataset[i].series.length - 1)];
                     svg.append("text")
-                        .attr("x", x_scale(new Date(last_elem.month)))
+                        .attr("x", x_scale(new Date(last_elem.month)) + 10)
                         .attr("y", y_scale(last_elem.value))
                         .attr("fill",color_scale(i))
                         .text(dataset[i].word)
 
-                    //TO DO: add hoverable points
+                    // hoverable points
                     svg.selectAll("." + dataset[i].word)
                         .data(dataset[i].series)
                         .enter()
@@ -171,7 +221,8 @@
                         .attr("fill",color_scale(i))
                         .on("mouseover", mouseover)
                         .on("mousemove", mousemove)
-                        .on("mouseleave", mouseleave);
+                        .on("mouseleave", mouseleave)
+                        .on("mousedown", mousedown);
                 }
             }
             // axes
@@ -192,10 +243,19 @@
                 .attr("transform","translate(" + left_marg + ", 0)")
                 .call(y_axis)
                 .style("stroke-width","2px")
-                .style("font-size","12px");;
+                .style("font-size","12px");
+
+            let vert_axis_label_txt = () => {
+                if(data_type == "frequency"){
+                    return "Relative Frequency (%)"
+                }
+                else if(data_type == "count"){
+                    return "Count"
+                }
+            } 
 
             svg.append("text")
-                .text("Relative Frequency (%)")
+                .text(vert_axis_label_txt)
                 .attr("text-anchor", "middle")
                 .attr("transform", "translate(" + (left_marg/3) + "," 
                 + (svg_h/2) + ")rotate(-90)");

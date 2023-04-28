@@ -62,4 +62,32 @@ def word_freq_query():
                 for row in res.fetchall()] 
         output_array.append({"word":word,"series":result_array})
 
-    return {"dataset":output_array, "data_date_range":[datestring1, datestring2]}
+    return {"dataset":output_array, 
+        "data_date_range":[datestring1, datestring2], 
+        "data_type":data_type}
+
+@app.post("/metadata")
+def retrieve_metadata():
+    data = request.form
+
+    word = data['word']
+    month = data['month'][:7]
+    print(month)
+
+    db_con = sqlite3.connect('../word_freq/ChronAmWords.db')
+    db_cur = db_con.cursor()
+
+    val = {"word":word, "month":month+"___"}
+    sql = ("SELECT DISTINCT * FROM occurrence WHERE string=:word "
+    "AND date LIKE :month")
+
+    res = db_cur.execute(sql, val)
+
+    result_array = [
+        {"date":row[1], 
+        "lccn":row[2], 
+        "ed":row[3], 
+        "seq":row[4]}
+        for row in res.fetchall()]
+
+    return {"metadata":result_array}
