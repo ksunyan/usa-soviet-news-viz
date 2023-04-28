@@ -30,6 +30,10 @@
     </form>
     <script type="text/javascript">
 
+        const month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
         query_form.onsubmit = async (e) => {
             e.preventDefault();
 
@@ -38,8 +42,8 @@
 
             // set up new viz
             let svg_w = document.body.clientWidth-10;
-            let svg_h = 600;
-            let bottom_marg = 80;
+            let svg_h = 500;
+            let bottom_marg = 35;
             let left_marg = 100;
             let right_marg = 80;
             let top_marg = 20;
@@ -89,6 +93,53 @@
                 .domain([0,dataset.length-1])
                 .range(["red", "blue"]);
 
+            //tooltip
+            let tooltip = d3.select("body")
+                .append("div")
+                .style("opacity", 0)
+                .style("background-color", "white")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px")
+                .style("position", "fixed")
+
+            function mouseover() {
+                tooltip.style("opacity", 1)
+            }
+
+            function mousemove(event, d) {
+                const [mouse_x, mouse_y] = d3.pointer(event, this)
+                let pointed_date = new Date(d.month);
+                tooltip
+                    .html(d.value.toFixed(5) + 
+                        "<br>" + 
+                        month_names[pointed_date.getUTCMonth()] + " " +
+                        pointed_date.getUTCFullYear())
+                    .style("left", ((mouse_x + 
+                        svg.node().getBoundingClientRect()['x']) + "px"))
+                    .style("top", ((mouse_y + 
+                        svg.node().getBoundingClientRect()['y']) + "px"))
+            } 
+
+            function mouseleave() {
+                tooltip.style("opacity", 0)
+            }
+
+            // show and hide points
+            function svg_mouseover() {
+                d3.selectAll("circle").style("opacity", 1)
+            }
+
+            function svg_mouseleave() {
+                d3.selectAll("circle").style("opacity", 0)
+            }
+            svg
+                .style("cursor","crosshair")
+                .on("mouseover", svg_mouseover)
+                .on("mouseleave", svg_mouseleave);
+
+            // add the lines and points
             for (let i = 0; i < dataset.length; i++){
                 if(dataset[i].series.length > 0){
                     svg.append("path")
@@ -98,8 +149,29 @@
                         .attr("stroke-width", 2)
                         .attr("d", d3.line()
                             .x(d => {return x_scale(new Date(d.month));})
-                            .y(d => {return y_scale(new Date(d.value));})
+                            .y(d => {return y_scale(d.value);})
                         )
+
+                    // line label
+                    const last_elem = dataset[i].series[(dataset[i].series.length - 1)];
+                    svg.append("text")
+                        .attr("x", x_scale(new Date(last_elem.month)))
+                        .attr("y", y_scale(last_elem.value))
+                        .attr("fill",color_scale(i))
+                        .text(dataset[i].word)
+
+                    //TO DO: add hoverable points
+                    svg.selectAll("." + dataset[i].word)
+                        .data(dataset[i].series)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", d => {return x_scale(new Date(d.month));})
+                        .attr("cy", d => {return y_scale(d.value);})
+                        .attr("r", 4)
+                        .attr("fill",color_scale(i))
+                        .on("mouseover", mouseover)
+                        .on("mousemove", mousemove)
+                        .on("mouseleave", mouseleave);
                 }
             }
             // axes
@@ -109,15 +181,24 @@
 
             svg.append("g")
                 .attr("transform","translate(0, " + (svg_h - bottom_marg) + ")")
-                .call(x_axis)
                 .style("stroke-width","2px")
-                .style("font-size","12px");
+                .style("font-size","12px")
+                .call(x_axis)
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("transform", "rotate(-45)");
 
             svg.append("g")
                 .attr("transform","translate(" + left_marg + ", 0)")
                 .call(y_axis)
                 .style("stroke-width","2px")
                 .style("font-size","12px");;
+
+            svg.append("text")
+                .text("Relative Frequency (%)")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (left_marg/3) + "," 
+                + (svg_h/2) + ")rotate(-90)");
         }
         
     </script>

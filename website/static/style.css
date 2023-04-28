@@ -5,11 +5,18 @@
 h1{
     font-family: verdana, sans-serif;
     font-size: x-large;
+    margin-left: 10px;
+    margin-top: 5px;
 }
 
 label{
     font-family: verdana, sans-serif;
     font-size: large;
+}
+
+text{
+    font-family: verdana, sans-serif;
+    font-size: small;
 }
 
 input[type="text"]{
