@@ -16,6 +16,10 @@ def word_vector():
 def faq():
     return render_template('FAQ.html')
 
+@app.route("/metadata")
+def metadata():
+    return render_template('metadata.html')
+
 @app.route("/word-frequency")
 def word_freq():
     return render_template("word_freq.html")
