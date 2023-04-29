@@ -70,7 +70,7 @@ def word_freq_query():
         "data_date_range":[datestring1, datestring2], 
         "data_type":data_type}
 
-@app.post("/metadata")
+@app.post("/frequency-metadata")
 def retrieve_metadata():
     data = request.form
 

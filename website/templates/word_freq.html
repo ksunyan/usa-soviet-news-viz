@@ -107,7 +107,7 @@
                 request_form.append("word", d.word)
                 request_form.append("month", d.month)
 
-                let response = await fetch("/metadata", {
+                let response = await fetch("/frequency-metadata", {
                 method: "POST",
                 body: request_form});
                 
