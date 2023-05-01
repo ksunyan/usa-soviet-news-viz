@@ -56,17 +56,18 @@
 
 
 <div class="navbar">
-    <a href="#">Introduction</a>
+    <a href={{url_for('introduction')}}>Introduction</a>
     <a href="#"class="active">Metadata</a>
     <a href={{url_for('word_vector')}}>Word Vector</a>
-    <a href="#" class="right">Link</a>
+    <a href={{url_for('conclusion')}}>Conclusion</a>
 </div>
 
 
 <div class="w3-container" id="metadata_explanation">
     <div class="w3-content" style="max-width:1000px">
         <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Metadata</span></h5>
-        <p>These word vectors were used by newspaper articles sourced from the Chronicalling America database. They were quered by all articles from each time period that mentioned the word Stalin, and then further filtered by an Optical Character Recognition (OCR) validation script to ensure that each article used was properly transcribed by OCR. The geographic distribution of the results is shown in the bubble map below:</p>    
+        <p>Chronicling America is an online newspaper database run in part by the Library of Congress. The database is composed of newspapers from across the US submitted by various institutions.</p>   
+        <p>Utilizing the search function, I filtered all pages with the word “Stalin” into five time periods from 1939 to Stalin’s death in 1953. These periods formed the corpuses of text that were used to generate word vectors. The graph shows the geographic distribution of these pages of text. Combined the time periods have over 27,000 pages worth of text.</p> 
     </div>
 </div>
   <script src="https://d3js.org/d3.v4.js"></script>
@@ -211,3 +212,11 @@
       })
       
     </script>
+
+
+<div class="w3-container" id="metadata_explanation">
+  <div class="w3-content" style="max-width:1000px">
+      <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Word2Vec</span></h5>
+      <p>These corpuses were fed into an implementation of Word2Vec, a family of neural networks that input text and output word vectors based on that text. This particular implementation is the skip-gram model. Skip-gram is an unsurpervised learning technique where, given a target word, skip-gram attempts to predict the most relevant context words for the target. This process is repeated over and over, filling out the dimensions of each word vector in the process; the resulting word vectors fromt hese particular models have 200 dimensions.</p>   
+  </div>
+</div>

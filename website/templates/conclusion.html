@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<style>
+/* Sticky navbar - toggles between relative and fixed, depending on the scroll position. It is positioned relative until a given offset position is met in the viewport - then it "sticks" in place (like position:fixed). The sticky value is not supported in IE or Edge 15 and earlier versions. However, for these versions the navbar will inherit default position */
+.navbar {
+  overflow: hidden;
+  background-color: #000000;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+}
+
+/* Style the navigation bar links */
+.navbar a {
+  float: left;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 20px;
+  text-decoration: none;
+}
+
+
+/* Right-aligned link */
+.navbar a.right {
+  float: right;
+}
+
+/* Change color on hover */
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Active/current link */
+.navbar a.active {
+  background-color: #666;
+  color: white;
+}
+</style>
+
+
+
+<div class="navbar">
+<a href={{url_for('introduction')}}>Introduction</a>
+<a href={{url_for('metadata')}}>Metadata</a>
+<a href={{url_for('word_vector')}}>Word Vector</a>
+<a href="#" class="active">Conclusion</a>
+</div>
+
+<div class="w3-container" id="word_vector_explanation">
+  <div class="w3-content" style="max-width:1000px">
+    <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Conclusion</span></h5>
+    <p>Word vectorization allows a historian to survey textual sources at a volume that would be unimaginable without the assistance of a computer. Comparing the similarity of words over time can guide a researcher to identify and interrogate trends over time at a macro scale.</p>
+    <p>However, these indications are insufficient to draw a concrete conclusion. Due to the black box nature of neural networks, what each dimension of a word vector represents, and thus the reasons why words are semantically similar, cannot be determined.</p>
+    <p>Word vectorization can generate intriguing hypothesizes, but a historian needs to further analyze the underlying sources to make sound observations.</p>
+  </div>
+  <div class="w3-padding-32"></div>
+</div>

@@ -8,6 +8,14 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route("/introduction")
+def introduction():
+    return render_template('introduction.html')
+
+@app.route("/conclusion")
+def conclusion():
+    return render_template('conclusion.html')
+
 @app.route("/word-vector")
 def word_vector():
     return render_template('heatmap.html')
