@@ -11,10 +11,10 @@
     stroke: black;
     stroke-width: 4px;
   }
-  .tooltip {
+  /*.tooltip {
     display: inline;
     position: fixed;
-  }
+  }*/
   /* Sticky navbar - toggles between relative and fixed, depending on the scroll position. It is positioned relative until a given offset position is met in the viewport - then it "sticks" in place (like position:fixed). The sticky value is not supported in IE or Edge 15 and earlier versions. However, for these versions the navbar will inherit default position */
   .navbar {
     overflow: hidden;
@@ -73,13 +73,13 @@
       Recognition (or OCR). On the right is a typical scan of one of the pages. </p>   
       <p>Utilizing the search function, I filtered all pages with the word “Stalin” into five time periods from 1939 to Stalin’s 
       death in 1953. These periods formed the corpuses of text that were used to generate word vectors.</p>
-      <p>This dataset was initially over 27,000 pages, 
+      <p>This dataset was initially over 30,000 pages, 
       but not all of it was usable. These pages are sometimes poorly scanned and in those cases OCR has difficulties 
       correctly identifying characters, causing it to generate nonsensical strings of symbols. 
       An OCR validation script was created which tokenized the words on each page and compared those tokens to a dictionary of
       known words. The pages with low percentages of known words were filtered out of the corpus.
       The graph shows the geographic distribution of the final corpus of text. 
-      Combined the time periods have over 20,000 pages.</p> 
+      Combined the time periods have over 23,000 pages.</p> 
     </div>
     <div class="w3-cell w3-cell-middle">
       <img src="static/stalin_page.png" width="130%" height="130%"class="w3-round" alt="A typical page from the Chronicling America database.">
@@ -96,144 +96,13 @@
   <!-- Create an element where the map will take place -->
   <div class="w3-content" style="max-width:1100px"><div id="my_dataviz2"></div></div>
   
-  <script>
   
-      // Size ?
-      var width = 800
-      var height = 500
-      
-      // The svg
-      var svg2 = d3.select("#my_dataviz2")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-      var svg3 = d3.select("#my_dataviz2")
-        .append("svg")
-        .attr("width", 250)
-        .attr("height", 200)
-      
-      // Map and projection
-      var projection = d3.geoMercator()
-          .center([-95, 40])                // GPS of location to zoom on
-          .scale(750)                       // This is like the zoom
-          .translate([ width/2, height/2 ])
-  
-      var projectionAlaska = d3.geoMercator()
-          .center([-69, 44])                // GPS of location to zoom on
-          .scale(250)  
-  
-  
-      
-      // Load external data and boot
-      d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson", function(data){
-      
-          // Filter data
-          data.features = data.features.filter( function(d){return d.properties.name=="USA"} )
-  
-          svg2.append("g")
-              .selectAll("path")
-              .data(data.features)
-              .enter()
-              .append("path")
-                .attr("fill", "#b8b8b8")
-                .attr("d", d3.geoPath()
-                    .projection(projection)
-                )
-              .style("stroke", "black")
-              .style("opacity", .3)
-  
-          svg3.append("g")
-              .selectAll("path")
-              .data(data.features)
-              .enter()
-              .append("path")
-                .attr("fill", "#b8b8b8")
-                .attr("d", d3.geoPath()
-                    .projection(projectionAlaska)
-                )
-              .style("stroke", "black")
-              .style("opacity", .3)
-  
-  
-          d3.csv("static/GeoData.csv", function(geodata) {
-              //var lat = d3.map(geodata, function(d){return +d.lat;})
-              //var long = d3.map(geodata, function(d){return +d.long;})
-              //var name = d3.map(geodata, function(d){return d.name;}).keys()
-              //var size = d3.map(geodata, function(d){return +d.freq;})
-  
-              
-              var size = d3.scaleLinear()
-                  .domain([1,7000])  // What's in the data
-                  .range([ 2, 50])  // Size in pixel
-              // Draw the map
-          
-              // create a tooltip
-              var Tooltip = d3.select("#my_dataviz2")
-              .append("div")
-              .attr("class", "tooltip")
-              .style("opacity", 1)
-              .style("background-color", "white")
-              .style("border", "solid")
-              .style("border-width", "2px")
-              .style("border-radius", "5px")
-              .style("padding", "5px")
-          
-              // Three function that change the tooltip when user hover / move / leave a cell
-              var mouseover = function(d) {
-              Tooltip.style("opacity", 1)
-              }
-              var mousemove = function(d) {
-              Tooltip
-                  .html(this.id + ": " + d.freq + " pages.")
-                  .style("left", (d3.mouse(this)[0]+10) + "px")
-                  .style("top", (d3.mouse(this)[1]) + "px")
-              }
-              var mouseleave = function(d) {
-              Tooltip.style("opacity", 0)
-              }
-          
-              // Add circles:
-              svg2
-              .selectAll("myCircles")
-              .data(geodata)
-              .enter()
-              .append("circle")
-                  .attr("cx", function(d){ return projection([+d.long, +d.lat])[0] })
-                  .attr("cy", function(d){ return projection([+d.long, +d.lat])[1] })
-                  .attr("r", function(d){ return size(+d.freq) })
-                  .attr("class", "circle")
-                  .style("fill", "red")
-                  .attr("stroke", "#red")
-                  .attr("stroke-width", 3)
-                  .attr("fill-opacity", .4)
-                  .attr("id", function(d) {return d.city;})
-              .on("mouseover", mouseover)
-              .on("mousemove", mousemove)
-              .on("mouseleave", mouseleave)
-  
-              svg3
-              .selectAll("myCircles")
-              .data(geodata)
-              .enter()
-              .append("circle")
-                  .attr("cx", function(d){ return projectionAlaska([+d.long, +d.lat])[0] })
-                  .attr("cy", function(d){ return projectionAlaska([+d.long, +d.lat])[1] })
-                  .attr("r", function(d){ return size(+d.freq) })
-                  .attr("class", "circle")
-                  .style("fill", "red")
-                  .attr("stroke", "#red")
-                  .attr("stroke-width", 3)
-                  .attr("fill-opacity", .4)
-                  .attr("id", function(d) {return d.city;})
-              .on("mouseover", mouseover)
-              .on("mousemove", mousemove)
-              .on("mouseleave", mouseleave)
-          })
-      })
-      
-    </script>
-
-
+<div class="w3-content" style="max-width:1000px">
+    <p>As the map indicates, the sources are largely located in the Northeast. Below a bar chart showing the breakdown of newspaper articles by time period. The five largest newspapers
+      are separated out from the rest.
+      The largest publication by far is the Evening Star, located in Washington, D.C.</p>
+</div>
+<div class="w3-content" style="max-width:1100px"><div id="bar_chart"></div></div>
 <div class="w3-container" id="metadata_explanation">
   <div class="w3-content" style="max-width:1000px">
       <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Word2Vec</span></h5>
@@ -266,3 +135,253 @@
   <p>From the Berlin Blockade to the death of Stalin.</p>
 </div>
 <div class="w3-twothird w3-container w3-padding-64"><img src="static/stalincollage.png" width="90%" height="90%"></div>
+
+<!-- Create a div where the graph will take place -->
+<script>
+
+  // set the dimensions and margins of the graph
+  var margin = {top: 10, right: 30, bottom: 20, left: 50},
+      width = 1200 - margin.left - margin.right,
+      height = 600 - margin.top - margin.bottom;
+  
+  // append the svg object to the body of the page
+  var svg = d3.select("#bar_chart")
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+  
+  // Parse the Data
+  d3.csv("static/barData.csv", function(data) {
+  
+    // List of subgroups = header of the csv files = soil condition here
+    var subgroups = data.columns.slice(1)
+  
+    // List of groups = species here = value of the first column called group -> I show them on the X axis
+    var groups = d3.map(data, function(d){return(d.period)}).keys()
+  
+    // Add X axis
+    var x = d3.scaleBand()
+        .domain(groups)
+        .range([0, width])
+        .padding([0.2])
+    svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).tickSizeOuter(0));
+  
+    // Add Y axis
+    var y = d3.scaleLinear()
+      .domain([0, 7000])
+      .range([ height, 0 ]);
+    svg.append("g")
+      .call(d3.axisLeft(y));
+  
+    // color palette = one color per subgroup
+    var color = d3.scaleOrdinal()
+      .domain(subgroups)
+      .range(["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7"])
+  
+    //stack the data? --> stack per subgroup
+    var stackedData = d3.stack()
+      .keys(subgroups)
+      (data)
+  
+  
+  
+  
+    // ----------------
+    // Create a tooltip
+    // ----------------
+    var tooltip = d3.select("#bar_chart")
+      .append("div")
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "10px")
+  
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function(d) {
+      var subgroupName = d3.select(this.parentNode).datum().key;
+      var subgroupValue = d.data[subgroupName];
+      tooltip
+          .html(subgroupName + "<br>" + "Pages: " + subgroupValue)
+          .style("opacity", 1)
+    }
+    var mousemove = function(d) {
+      tooltip
+        .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+        .style("top", (d3.mouse(this)[1]) + "px")
+    }
+    var mouseleave = function(d) {
+      tooltip
+        .style("opacity", 0)
+    }
+  
+  
+  
+  
+    // Show the bars
+    svg.append("g")
+      .selectAll("g")
+      // Enter in the stack data = loop key per key = group per group
+      .data(stackedData)
+      .enter().append("g")
+        .attr("fill", function(d) { return color(d.key); })
+        .selectAll("rect")
+        // enter a second time = loop subgroup per subgroup to add all rectangles
+        .data(function(d) { return d; })
+        .enter().append("rect")
+          .attr("x", function(d) { return x(d.data.period); })
+          .attr("y", function(d) { return y(d[1]); })
+          .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+          .attr("width",x.bandwidth())
+          .attr("stroke", "grey")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave)
+  
+  })
+  
+  </script>
+
+<script>
+  
+  // Size ?
+  var width = 800
+  var height = 500
+  
+  // The svg
+  var svg2 = d3.select("#my_dataviz2")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  var svg3 = d3.select("#my_dataviz2")
+    .append("svg")
+    .attr("width", 250)
+    .attr("height", 200)
+  
+  // Map and projection
+  var projection = d3.geoMercator()
+      .center([-95, 40])                // GPS of location to zoom on
+      .scale(750)                       // This is like the zoom
+      .translate([ width/2, height/2 ])
+
+  var projectionAlaska = d3.geoMercator()
+      .center([-69, 44])                // GPS of location to zoom on
+      .scale(250)  
+
+
+  
+  // Load external data and boot
+  d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson", function(data){
+  
+      // Filter data
+      data.features = data.features.filter( function(d){return d.properties.name=="USA"} )
+
+      svg2.append("g")
+          .selectAll("path")
+          .data(data.features)
+          .enter()
+          .append("path")
+            .attr("fill", "#b8b8b8")
+            .attr("d", d3.geoPath()
+                .projection(projection)
+            )
+          .style("stroke", "black")
+          .style("opacity", .3)
+
+      svg3.append("g")
+          .selectAll("path")
+          .data(data.features)
+          .enter()
+          .append("path")
+            .attr("fill", "#b8b8b8")
+            .attr("d", d3.geoPath()
+                .projection(projectionAlaska)
+            )
+          .style("stroke", "black")
+          .style("opacity", .3)
+
+
+      d3.csv("static/GeoData.csv", function(geodata) {
+          //var lat = d3.map(geodata, function(d){return +d.lat;})
+          //var long = d3.map(geodata, function(d){return +d.long;})
+          //var name = d3.map(geodata, function(d){return d.name;}).keys()
+          //var size = d3.map(geodata, function(d){return +d.freq;})
+
+          
+          var size = d3.scaleLinear()
+              .domain([1,7000])  // What's in the data
+              .range([ 2, 50])  // Size in pixel
+          // Draw the map
+      
+          // create a tooltip
+          var Tooltip = d3.select("#my_dataviz2")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 1)
+          .style("background-color", "white")
+          .style("border", "solid")
+          .style("border-width", "2px")
+          .style("border-radius", "5px")
+          .style("padding", "5px")
+      
+          // Three function that change the tooltip when user hover / move / leave a cell
+          var mouseover = function(d) {
+          Tooltip.style("opacity", 1)
+          }
+          var mousemove = function(d) {
+          Tooltip
+              .html(this.id + ": " + d.freq + " pages.")
+              .style("left", (d3.mouse(this)[0]+10) + "px")
+              .style("top", (d3.mouse(this)[1]) +  "px")
+          }
+          var mouseleave = function(d) {
+          Tooltip.style("opacity", 0)
+          }
+      
+          // Add circles:
+          svg2
+          .selectAll("myCircles")
+          .data(geodata)
+          .enter()
+          .append("circle")
+              .attr("cx", function(d){ return projection([+d.long, +d.lat])[0] })
+              .attr("cy", function(d){ return projection([+d.long, +d.lat])[1] })
+              .attr("r", function(d){ return size(+d.freq) })
+              .attr("class", "circle")
+              .style("fill", "red")
+              .attr("stroke", "#red")
+              .attr("stroke-width", 3)
+              .attr("fill-opacity", .4)
+              .attr("id", function(d) {return d.city;})
+          .on("mouseover", mouseover)
+          .on("mousemove", mousemove)
+          .on("mouseleave", mouseleave)
+
+          svg3
+          .selectAll("myCircles")
+          .data(geodata)
+          .enter()
+          .append("circle")
+              .attr("cx", function(d){ return projectionAlaska([+d.long, +d.lat])[0] })
+              .attr("cy", function(d){ return projectionAlaska([+d.long, +d.lat])[1] })
+              .attr("r", function(d){ return size(+d.freq) })
+              .attr("class", "circle")
+              .style("fill", "red")
+              .attr("stroke", "#red")
+              .attr("stroke-width", 3)
+              .attr("fill-opacity", .4)
+              .attr("id", function(d) {return d.city;})
+          .on("mouseover", mouseover)
+          .on("mousemove", mousemove)
+          .on("mouseleave", mouseleave)
+      })
+  })
+  
+</script>

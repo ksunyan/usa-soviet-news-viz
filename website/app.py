@@ -4,11 +4,8 @@ import sqlite3
 
 app = Flask(__name__)
 
-@app.route("/")
-def index():
-    return render_template('index.html')
 
-@app.route("/introduction")
+@app.route("/")
 def introduction():
     return render_template('introduction.html')
 
@@ -31,6 +28,10 @@ def metadata():
 @app.route("/word-frequency")
 def word_freq():
     return render_template("word_freq.html")
+
+@app.route("/project-proposal")
+def proposal():
+    return render_template("Project_Proposal.pdf")
 
 @app.post("/query")
 def word_freq_query():
