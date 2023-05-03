@@ -63,18 +63,38 @@
 </div>
 
 
-<div class="w3-container" id="metadata_explanation">
-    <div class="w3-content" style="max-width:1000px">
-        <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Metadata</span></h5>
-        <p>Chronicling America is an online newspaper database run in part by the Library of Congress. The database is composed of newspapers from across the US submitted by various institutions.</p>   
-        <p>Utilizing the search function, I filtered all pages with the word “Stalin” into five time periods from 1939 to Stalin’s death in 1953. These periods formed the corpuses of text that were used to generate word vectors. The graph shows the geographic distribution of these pages of text. Combined the time periods have over 27,000 pages worth of text.</p> 
+<div class="w3-content" style="max-width:1000px" id="metadata_explanation">
+  <div class ="w3-cell-row">
+    <div class="w3-cell">
+      <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Metadata</span></h5>
+      <p>Chronicling America is a website hosted by the Library of Congress. It is meant to be a comprehensive 
+      repository of newspapers, collected across the entirety of the United States over hundreds of years. 
+      Chronicling America has over 20,000,000 pages of newspapers, all made searchable via Optical Character 
+      Recognition (or OCR). On the right is a typical scan of one of the pages. </p>   
+      <p>Utilizing the search function, I filtered all pages with the word “Stalin” into five time periods from 1939 to Stalin’s 
+      death in 1953. These periods formed the corpuses of text that were used to generate word vectors.</p>
+      <p>This dataset was initially over 27,000 pages, 
+      but not all of it was usable. These pages are sometimes poorly scanned and in those cases OCR has difficulties 
+      correctly identifying characters, causing it to generate nonsensical strings of symbols. 
+      An OCR validation script was created which tokenized the words on each page and compared those tokens to a dictionary of
+      known words. The pages with low percentages of known words were filtered out of the corpus.
+      The graph shows the geographic distribution of the final corpus of text. 
+      Combined the time periods have over 20,000 pages.</p> 
     </div>
+    <div class="w3-cell w3-cell-middle">
+      <img src="static/stalin_page.png" width="130%" height="130%"class="w3-round" alt="A typical page from the Chronicling America database.">
+    </div>
+  </div>
+
+
+</div>
+  
 </div>
   <script src="https://d3js.org/d3.v4.js"></script>
   <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
   
   <!-- Create an element where the map will take place -->
-  <div id="my_dataviz2"></div>
+  <div class="w3-content" style="max-width:1100px"><div id="my_dataviz2"></div></div>
   
   <script>
   
@@ -217,6 +237,32 @@
 <div class="w3-container" id="metadata_explanation">
   <div class="w3-content" style="max-width:1000px">
       <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Word2Vec</span></h5>
-      <p>These corpuses were fed into an implementation of Word2Vec, a family of neural networks that input text and output word vectors based on that text. This particular implementation is the skip-gram model. Skip-gram is an unsurpervised learning technique where, given a target word, skip-gram attempts to predict the most relevant context words for the target. This process is repeated over and over, filling out the dimensions of each word vector in the process; the resulting word vectors fromt hese particular models have 200 dimensions.</p>   
+      <p>These corpuses were fed into an implementation of Word2Vec, a family of neural networks that input text and output word 
+        vectors based on that text. This version of Word2Vec utilizes skip-gram. 
+        Skip-gram is an unsupervised learning technique where, given a target word, 
+        skip-gram attempts to predict the most relevant context words for the target. 
+        This process is repeated over and over, filling out the dimensions of each word vector in the process; 
+        the resulting word vectors from these particular models have 200 dimensions. 
+        Skip-gram models are computationally expensive, but these corpuses of text are small enough to ensure the model 
+        generation is relatively quick. The five corpuses were tokenized and fed into this implementation of Word2Vec. 
+        Commons stop words like “and” or “is” were filtered out so that the models focused on the important words in each corpus.
+        
+      </p>   
+      <p>
+        The time periods were chosen based on historically significant and relevant events. They are described below:
+      </p>
   </div>
 </div>
+<div class="w3-third w3-container w3-padding-16" id = "info">
+  <h3>August 23rd, 1939 - June 22nd, 1941</h3>
+  <p>From the official signing of the Molotov-Ribbontrop Pact, to the first day of Operation Barbarossa, the German invasion of the Soviet Union.</p>
+  <h3>June 23rd, 1941 - February 2nd, 1943</h3>
+  <p>From Operation Barbarossa to the Soviet announcement of the surrender of the German Sixth Army in Stalingrad.</p>
+  <h3>February 3rd, 1943 - May 9th, 1945</h3>
+  <p>From the end of the Battle of Stalingrad to the official surrender of Germany in Soviet historiography.</p>
+  <h3>May 10th, 1945 - June 24th, 1948</h3>
+  <p>From the end of the war in Europe to the beginning of the Soviet blockade of Berlin.</p>
+  <h3>June 25th, 1948 - March 5th, 1953</h3>
+  <p>From the Berlin Blockade to the death of Stalin.</p>
+</div>
+<div class="w3-twothird w3-container w3-padding-64"><img src="static/stalincollage.png" width="90%" height="90%"></div>

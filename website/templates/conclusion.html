@@ -58,8 +58,28 @@
   <div class="w3-content" style="max-width:1000px">
     <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Conclusion</span></h5>
     <p>Word vectorization allows a historian to survey textual sources at a volume that would be unimaginable without the assistance of a computer. Comparing the similarity of words over time can guide a researcher to identify and interrogate trends over time at a macro scale.</p>
-    <p>However, these indications are insufficient to draw a concrete conclusion. Due to the black box nature of neural networks, what each dimension of a word vector represents, and thus the reasons why words are semantically similar, cannot be determined.</p>
-    <p>Word vectorization can generate intriguing hypothesizes, but a historian needs to further analyze the underlying sources to make sound observations.</p>
+    <p>However, these indications are insufficient on their own. Due to the black box nature of neural networks, 
+      what each dimension of a word vector represents, and thus the reasons why words are semantically similar, 
+      cannot be determined. Nor can the vector model determine what parts of the corpus led it to make certain 
+      associations between words. In order to truly understand what a set of word vectors is showing, a historian 
+      needs to further analyze the underlying sources and develop their supporting evidence from there. Word vectorization 
+      can serve as a tool during research; it is not, without further work, sufficient to draw sound conclusions.</p>
+    <p>There are clear avenues for expansion and improvement on the specific visualizations made here. Most obviously, 
+      the size of the corpuses can be increased. While Chronicling America does represent newspapers from across the country, 
+      it is heavily concentrated on a couple of publications. Other online archives, like the one for the New York Times, 
+      could be incorporated in order to create a more holistic picture of American public opinion. The distribution of pages per 
+      publication could also be altered to ensure no one newspaper dominates the resulting model</p>
+    <p>As well, in the interest of keeping the project lean and efficient, only pages with text that explicitly mentions 
+      “Stalin” were included in the corpuses. This limits the potential comparison of word vectors, as associations for 
+      words other than “Stalin” are skewed towards the prominence of “Stalin” in the text. Word vectorization could be 
+      applied to a much larger set of newspaper articles across these time periods. While the resulting models would take 
+      longer to train and require much more storage, this would allow the analysis of any number of words that appear in the 
+      corpus, rather than just focusing on one like “Stalin.” A tool could be built to allow the user to explore these word 
+      vectors and their associations at their own pace.
+    </p>
+  </div>
+  <div class="w3-content" style="max-width:1200px">
+    <img src="static/stalin_death.png" width="100%" height="100%"class="w3-round">
   </div>
   <div class="w3-padding-32"></div>
 </div>

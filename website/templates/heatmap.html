@@ -65,26 +65,18 @@
 <div class="w3-container" id="word_vector_explanation">
   <div class="w3-content" style="max-width:1000px">
     <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Cosine Similarity</span></h5>
-    <p>As word vectors are vectors, they can be compared to each other by calculating their cosine similarity. Cosine similarity measure how closely two vectors point towards each other, on a scale from -1 to 1.</p>
-    <p>Cosine similarity can be calculated regardless of the number of dimensions a vector has, meaning that they are a useful way to visualize the relationship between word vectors with 200 dimensions.</p>
-    <p>By checking the cosine similarity of select words to the word “Stalin” over the five time periods, we can examine how associations with Stalin changed over time in the American press. Below is a heatmap showing the changes in cosine similarity of ten words over time.</p>
+    <p>As word vectors are vectors, they can be compared to each other by calculating their cosine similarity. 
+      Cosine similarity measure how closely two vectors point towards each other, on a scale from -1 to 1.</p>
+    <p>Cosine similarity can be calculated regardless of the number of dimensions a vector has, 
+      meaning that they are a useful way to visualize the relationship between word vectors with 200 dimensions.</p>
+    <p>By checking the cosine similarity of select words to the word “Stalin” over the five time periods, 
+      we can examine how associations with Stalin changed over time in the American press. 
+      Below is a heatmap showing the changes in cosine similarity of ten words over time.</p>
   </div>
   <div class="w3-padding-32"></div>
 </div>
 
-<div class="w3-twothird w3-container" id="my_dataviz"></div>
-<div class="w3-third w3-container" id = "info">
-  <h3>August 23rd, 1939 - June 22nd, 1941</h3>
-  <p>From the official signing of the Molotov-Ribbontrop Pact, to the first day of Operation Barbarossa, the German invasion of the Soviet Union.</p>
-  <h3>June 23rd, 1941 - February 2nd, 1943</h3>
-  <p>From Operation Barbarossa to the Soviet announcement of the surrender of the German Sixth Army in Stalingrad.</p>
-  <h3>February 3rd, 1943 - May 9th, 1945</h3>
-  <p>From the end of the Battle of Stalingrad to the official surrender of Germany in Soviet historiography.</p>
-  <h3>May 10th, 1945 - June 24th, 1948</h3>
-  <p>From the end of the war in Europe to the beginning of the Soviet blockade of Berlin.</p>
-  <h3>June 25th, 1948 - March 5th, 1953</h3>
-  <p>From the Berlin Blockade to the death of Stalin.</p>
-</div>
+<div class="w3-container" id="my_dataviz"></div>
 
 <!-- Load color palettes -->
 <script src="https://github.com/d3/d3-scale-chromatic/blob/main/src/diverging/RdBu.js"></script>
@@ -92,8 +84,8 @@
 <script>
 
     // set the dimensions and margins of the graph
-    var margin = {top: 80, right: 25, bottom: 30, left: 150},
-      width = 1000- margin.left - margin.right,
+    var margin = {top: 80, right: 25, bottom: 30, left: 350},
+      width = 1200- margin.left - margin.right,
       height = 700 - margin.top - margin.bottom;
     
     // append the svg object to the body of the page
@@ -165,8 +157,6 @@
           .style("left", (d3.mouse(this)[0]+20) + "px")
           .style("top", (d3.mouse(this)[1]) + "px")
           .html("The cosine similarity of Stalin and <b>" + this.id + "</b> is <b>" + d.value + "</b> <br>for the period <b>" + d.period + "</b>.")
-          //.attr("x", 0)
-          //.attr("y", -550)
       }
       var mouseleave = function(d) {
         tooltip
@@ -229,14 +219,42 @@
   <div class="w3-content" style="max-width:1000px">
     <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Observations</span></h5>
     <p>The ten selected words above work best when considered in pairs:</p>
-    <p>Dictator, Dictators: During the first period we see that there is a stronger association between these titles and the word Stalin. During the second and third periods, when the Soviets were allied with the United States, the cosine similarity drops significantly. It then begins to climb back to the original value (dictator especially) in the post war era.</p>
-    <p>Premier, Ally: These are both descriptors that do not change signifcantly during the different periods. Premier was a general descriptor for the Soviet head of government and it maintains a moderatly strong association with Stalin. Despite there being multiple period were Stalin was an ally of the US, the word has a weak association that stays weak throughout.</p>
-    <p>Mussolini, Hitler: the two leaders of the Axis powers in Europe, both names maintain a strong association with Stalin throughout (and Mussolini is the word with the highest cosine similarity to Stalin in the first time period). Even after the deaths of both Hitler and Mussolini in 1945, the association between these names do not drop.</p>
-    <p>Churchill, Roosevelt: In contrast to the Axis powers, the two leaders of the Western Allies initially have a low similarity with Stalin, which grows over time. Roosevelt's peaks around his death in 1945 and then begins to decline again, while Churchill's association continues to grow, and the highest similarity between the two occurs in the last time period.</p>
-    <p>Lenin, Tito: Two communist leaders whose legacies are tied to Stalin. Lenin, Stalin's predecessor, maintains a strong association which peaks during the middle part of the war. Tito initially begins with a very weak associations, which sees a metoric rise during his consolidation of power in Yugoslavia. By the final time period Tito has the highest cosine similarity with Stalin of any word.</p>
+    <ul>
+      <li><b>Dictator, Dictators:</b> During the first period we see that there is a stronger association between these titles and 
+        the word Stalin. During the second and third periods, when the Soviets were allied with the United States, 
+        the cosine similarity dropped significantly. It then begins to climb back to the original value (dictator especially) in 
+        the post war era.</li>
+      <li><b>Premier, Ally:</b> These are both descriptors that do not change signifcantly during the different periods. 
+        Premier was a general descriptor for the Soviet head of government and it maintains a moderately strong association with Stalin. 
+        Despite there being multiple periods where Stalin was an ally of the US, the word has a weak association that stays weak throughout.</li>
+      <li><b>Mussolini, Hitler:</b> the two leaders of the Axis powers in Europe, both names maintain a strong association with Stalin 
+        throughout (and Mussolini is the word with the highest cosine similarity to Stalin in the first time period). 
+        Even after the deaths of both Hitler and Mussolini in 1945, the association between these names do not drop.</li>
+      <li><b>Churchill, Roosevelt:</b> In contrast to the Axis powers, the two leaders of the Western Allies initially have a 
+        low similarity with Stalin, which grows over time. Roosevelt's peaks around his death in 1945 and then begins to decline again, 
+        while Churchill's association continues to grow, and the highest similarity between the two occurs in the last time period.</li>
+      <li><b>Lenin, Tito:</b> Two communist leaders whose legacies are tied to Stalin. Lenin, Stalin's predecessor, maintains a strong 
+        association which peaks during the middle part of the war. Tito initially begins with a very weak association,
+         which sees a meteoric rise during his consolidation of power in Yugoslavia. 
+         By the final time period Tito has the highest cosine similarity with Stalin of any word.</li>
+    </ul>
     <h5 class="w3-padding-16"><span class="w3-tag w3-wide">Observations</span></h5>
-    <p>Comparing the results of each word, one can draw a number of hypothesizes as to why. For example, the dip in cosine similarity for "Stalin" and "dictator/dictators" corresponds during the war years where the Soviet Union was an ally of the United States. This suggests that American newspapers were less inclined to associate Stalin with such negative terms when he was an ally. Take also the increasing association with Tito. Once Tito had full control over Yugoslavia, he increasingly butt heads with Stalin over the direction of the Communist ideology in Europe. The most dramatic events of this split occured between 1948 and 1953 - one could draw the conclusion that the cosine similiarity between the two is so high because the American public was fascinated with this growing fracture in the Communist bloc.</p>
-    <p>Due to the black box nature of a neural network, however, one cannot go much farther than a hypothesis with just this information. The underlying dimensions in each word vector do not explicitly represent semantic concepts; they are just areas of relevance that Word2Vec identified while it trained. Similarly, the Word2Vec model does not know anything about the sources used to train it, and cannot provide further information about the articles that led to a word being trained in the way that it was.</p>
+    <p>Comparing the results of each word, one can draw a number of hypotheses as to why. For example, the dip in cosine similarity 
+      for "Stalin" and "dictator/dictators" corresponds during the war years where the Soviet Union was an ally of the United States. 
+      This could suggest that American newspapers were less inclined to associate Stalin with such negative terms when he was an ally. 
+      Of course, if that is the case, one would then need to consider why the association for the word “ally” does not change 
+      significantly at all. Did the American public view Stalin as a proper ally? Can the drop in association truly be attributed to 
+      the war, or is it something else incidental in nature?
+    </p>
+    <p>Take also the increasing association with Tito. Once Tito had full control over Yugoslavia, he increasingly ran into conflict with 
+      Stalin over the direction of the Communist ideology in Europe. The most dramatic events of this split occurred between 1948 and 
+      1953 — one could draw the conclusion that the cosine similarity between the two is so high because the American public was 
+      fascinated with their developing relationship. 
+      This similarity, however, cannot describe the exact nature of the association between Stalin and Tito. 
+      Are they closely associated because Americans viewed them as similar people from the perspective of the United States, 
+      or because they were butting heads so often? A cosine similarity cannot reveal this, nor would examining the underlying 
+      dimensions. The dimensions of a word vector were trained in an unsupervised manner by Word2Vec, and thus do not represent 
+      established semantic qualities that can be analyzed in an easy manner.</p>
     </div>
   <div class="w3-padding-32"></div>
 </div>
