@@ -35,7 +35,7 @@ def word_freq_query():
 
     word_list = [w.strip() for w in raw_words.split(',')]
 
-    db_con = sqlite3.connect('../word_freq/ChronAmWords.db')
+    db_con = sqlite3.connect('ChronAmWords.db')
     db_cur = db_con.cursor()
 
     # query the database for monthly totals
@@ -78,7 +78,7 @@ def retrieve_metadata():
     month = data['month'][:7]
     print(month)
 
-    db_con = sqlite3.connect('../word_freq/ChronAmWords.db')
+    db_con = sqlite3.connect('ChronAmWords.db')
     db_cur = db_con.cursor()
 
     val = {"word":word, "month":month+"___"}
