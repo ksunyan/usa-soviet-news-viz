@@ -116,21 +116,25 @@
                 let metadata = result.metadata;
 
                 d3.selectAll("li").remove();
-                metadata_heading.text("Sources for '" + d.word + 
-                    "' from " + month_names[pointed_date.getUTCMonth()] + 
-                    " " + pointed_date.getUTCFullYear() + 
-                    " (" + metadata.length + " pages)")
+                metadata_heading.text("");
 
-                for (const elem of metadata){
-                    url = ("https://chroniclingamerica.loc.gov/lccn/" + 
-                        elem.lccn + "/" + elem.date + "/" + elem.ed + "/" + 
-                        elem.seq)
-                    txt = (elem.date + ": " + 
-                        elem.lccn + 
-                        ", edition " + elem.ed +
-                        ", sequence " + elem.seq); 
-                    ul.append("li")
-                        .html("<a href=" + url + " target='_blank'>" + txt + "</a>")
+                if(metadata.length > 0){ 
+                    metadata_heading.text("Sources for '" + d.word + 
+                        "' from " + month_names[pointed_date.getUTCMonth()] + 
+                        " " + pointed_date.getUTCFullYear() + 
+                        " (" + metadata.length + " pages)")
+
+                    for (const elem of metadata){
+                        url = ("https://chroniclingamerica.loc.gov/lccn/" + 
+                            elem.lccn + "/" + elem.date + "/" + elem.ed + "/" + 
+                            elem.seq)
+                        txt = (elem.date + ": " + 
+                            elem.lccn + 
+                            ", edition " + elem.ed +
+                            ", sequence " + elem.seq); 
+                        ul.append("li")
+                            .html("<a href=" + url + " target='_blank'>" + txt + "</a>")
+                    }
                 }
             }
 
@@ -226,39 +230,47 @@
                 }
             }
             // axes
-            let x_axis = d3.axisBottom().scale(x_scale).ticks(d3.timeYear);
 
-            let y_axis = d3.axisLeft().scale(y_scale);
+            // recall that min_value was set to MAX_SAFE_INTEGER by default
+            // so min_value == MAX_SAFE_INTEGER means there was no data
+            if(min_value < Number.MAX_SAFE_INTEGER){ 
+                let x_axis = d3.axisBottom().scale(x_scale).ticks(d3.timeYear);
 
-            svg.append("g")
-                .attr("transform","translate(0, " + (svg_h - bottom_marg) + ")")
-                .style("stroke-width","2px")
-                .style("font-size","12px")
-                .call(x_axis)
-                .selectAll("text")
-                .style("text-anchor", "end")
-                .attr("transform", "rotate(-45)");
+                let y_axis = d3.axisLeft().scale(y_scale);
 
-            svg.append("g")
-                .attr("transform","translate(" + left_marg + ", 0)")
-                .call(y_axis)
-                .style("stroke-width","2px")
-                .style("font-size","12px");
+                svg.append("g")
+                    .attr("transform","translate(0, " + (svg_h - bottom_marg) + ")")
+                    .style("stroke-width","2px")
+                    .style("font-size","12px")
+                    .call(x_axis)
+                    .selectAll("text")
+                    .style("text-anchor", "end")
+                    .attr("transform", "rotate(-45)");
 
-            let vert_axis_label_txt = () => {
-                if(data_type == "frequency"){
-                    return "Relative Frequency (%)"
-                }
-                else if(data_type == "count"){
-                    return "Count"
-                }
-            } 
+                svg.append("g")
+                    .attr("transform","translate(" + left_marg + ", 0)")
+                    .call(y_axis)
+                    .style("stroke-width","2px")
+                    .style("font-size","12px");
 
-            svg.append("text")
-                .text(vert_axis_label_txt)
-                .attr("text-anchor", "middle")
-                .attr("transform", "translate(" + (left_marg/3) + "," 
-                + (svg_h/2) + ")rotate(-90)");
+                let vert_axis_label_txt = () => {
+                    if(data_type == "frequency"){
+                        return "Relative Frequency (%)"
+                    }
+                    else if(data_type == "count"){
+                        return "Count"
+                    }
+                } 
+
+                svg.append("text")
+                    .text(vert_axis_label_txt)
+                    .attr("text-anchor", "middle")
+                    .attr("transform", "translate(" + (left_marg/3) + "," 
+                    + (svg_h/2) + ")rotate(-90)");
+            }
+            else{
+                alert("No results found. Please try a different word.");
+            }
         }
         
     </script>
